@@ -95,5 +95,31 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	fmt.Println(u)
+	fmt.Println(l)
+
+	req, err = cacoo.NewOrganizationsRequest(ctx)
+	if err != nil {
+		log.Panicln(err)
+	}
+	resp4, err := c.Do(req)
+	if err != nil {
+		log.Panicln(err)
+	}
+	defer func() {
+		_, err = io.Copy(ioutil.Discard, resp4.Body)
+		if err != nil {
+			log.Println(err)
+		}
+		err = resp4.Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+
+	var o cacoo.OrganizationsResponse
+	err = xml.NewDecoder(io.TeeReader(resp4.Body, os.Stderr)).Decode(&o)
+	if err != nil {
+		log.Panicln(err)
+	}
+	fmt.Println(o)
 }
