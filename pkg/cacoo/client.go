@@ -12,12 +12,14 @@ import (
 type Client struct {
 	client *http.Client
 	apiKey string
+	debug  bool
 }
 
-func NewClient(apiKey string) *Client {
+func NewClient(apiKey string, debug bool) *Client {
 	return &Client{
 		client: http.DefaultClient,
 		apiKey: apiKey,
+		debug:  debug,
 	}
 }
 
@@ -52,7 +54,11 @@ func (c *Client) do(req *http.Request, err error) func(interface{}) error {
 		if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
 			return fmt.Errorf("request to Cacoo API was not successful: %s", resp.Status)
 		}
-		err = xml.NewDecoder(io.TeeReader(resp.Body, os.Stderr)).Decode(v)
+		var r io.Reader = resp.Body
+		if c.debug {
+			r = io.TeeReader(r, os.Stdout)
+		}
+		err = xml.NewDecoder(r).Decode(v)
 		if err != nil {
 			return err
 		}
