@@ -2,12 +2,8 @@ package main
 
 import (
 	"context"
-	"encoding/xml"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 
 	"cacoo/pkg/cacoo"
@@ -19,107 +15,39 @@ func main() {
 
 	c := cacoo.NewClient(apiKey)
 
-	//req, err := http.NewRequestWithContext(ctx, http.MethodGet, cacoo.DiagramsURL+"?apiKey="+apiKey, nil)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, cacoo.AccountURL, nil)
+	a, err := c.Account(ctx)
 	if err != nil {
 		log.Panicln(err)
 	}
-	resp, err := c.Do(req)
-	if err != nil {
-		log.Panicln(err)
-	}
-	defer func() {
-		_, err = io.Copy(ioutil.Discard, resp.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		err = resp.Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}()
+	fmt.Println(a)
 
-	var d cacoo.AccountResponse
-	err = xml.NewDecoder(io.TeeReader(resp.Body, os.Stderr)).Decode(&d)
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	req, err = cacoo.NewUsersRequest(ctx, d.Name)
-	if err != nil {
-		log.Panicln(err)
-	}
-	resp2, err := c.Do(req)
-	if err != nil {
-		log.Panicln(err)
-	}
-	defer func() {
-		_, err = io.Copy(ioutil.Discard, resp2.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		err = resp2.Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}()
-
-	var u cacoo.UsersResponse
-	err = xml.NewDecoder(io.TeeReader(resp2.Body, os.Stderr)).Decode(&u)
+	u, err := c.User(ctx, a.Name)
 	if err != nil {
 		log.Panicln(err)
 	}
 	fmt.Println(u)
 
-	req, err = cacoo.NewLicenseRequest(ctx)
-	if err != nil {
-		log.Panicln(err)
-	}
-	resp3, err := c.Do(req)
-	if err != nil {
-		log.Panicln(err)
-	}
-	defer func() {
-		_, err = io.Copy(ioutil.Discard, resp3.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		err = resp3.Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}()
-
-	var l cacoo.LicenseResponse
-	err = xml.NewDecoder(io.TeeReader(resp3.Body, os.Stderr)).Decode(&l)
+	l, err := c.License(ctx)
 	if err != nil {
 		log.Panicln(err)
 	}
 	fmt.Println(l)
 
-	req, err = cacoo.NewOrganizationsRequest(ctx)
-	if err != nil {
-		log.Panicln(err)
-	}
-	resp4, err := c.Do(req)
-	if err != nil {
-		log.Panicln(err)
-	}
-	defer func() {
-		_, err = io.Copy(ioutil.Discard, resp4.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		err = resp4.Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}()
-
-	var o cacoo.OrganizationsResponse
-	err = xml.NewDecoder(io.TeeReader(resp4.Body, os.Stderr)).Decode(&o)
+	o, err := c.Organizations(ctx)
 	if err != nil {
 		log.Panicln(err)
 	}
 	fmt.Println(o)
+
+	ds, err := c.Diagrams(ctx)
+	if err != nil {
+		log.Panicln(err)
+	}
+	fmt.Println(ds)
+
+	d, err := c.Diagram(ctx, ds[0].DiagramID)
+	if err != nil {
+		log.Panicln(err)
+	}
+	fmt.Println(d)
 }
