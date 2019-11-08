@@ -13,6 +13,7 @@ import (
 
 var commands = map[string]func(context.Context, *cacoo.Client){
 	"account": Account,
+	"user":    User,
 }
 
 func Account(ctx context.Context, client *cacoo.Client) {
@@ -26,9 +27,29 @@ func Account(ctx context.Context, client *cacoo.Client) {
 	fmt.Println("ImageURL:", a.ImageURL)
 }
 
+func License(ctx context.Context, client *cacoo.Client) {
+
+}
+
+func User(ctx context.Context, client *cacoo.Client) {
+	if flag.NArg() != 2 {
+		fmt.Fprintln(os.Stderr, "usage:", os.Args[0], "user", "<user-name>")
+	}
+
+	u, err := client.User(ctx, flag.Arg(1))
+	if err != nil {
+		log.Panicln(err)
+	}
+	fmt.Println("    Name:", u.Name)
+	fmt.Println("Nickname:", u.Nickname)
+	fmt.Println("    Type:", u.Type)
+	fmt.Println("ImageURL:", u.ImageURL)
+}
+
 func available() {
 	fmt.Fprintln(os.Stderr, "Available commands are:")
-	fmt.Fprintln(os.Stderr, "   ", "account - list information on account associated with the API key")
+	fmt.Fprintln(os.Stderr, "   ", "account          - list information on account associated with the API key")
+	fmt.Fprintln(os.Stderr, "   ", "user <user-name> - list information on specified user")
 	os.Exit(2)
 }
 
@@ -76,39 +97,33 @@ func main() {
 	cmd(ctx, c)
 	return
 
-	u, err := c.User(ctx, "")
-	if err != nil {
-		log.Panicln(err)
-	}
-	fmt.Println(u)
-
-	l, err := c.License(ctx)
-	if err != nil {
-		log.Panicln(err)
-	}
-	fmt.Println(l)
-
-	o, err := c.Organizations(ctx)
-	if err != nil {
-		log.Panicln(err)
-	}
-	fmt.Println(o)
-
-	ds, err := c.Diagrams(ctx, cacoo.WithFilter(cacoo.FilterOwnedDiagrams), cacoo.WithLimit(3))
-	if err != nil {
-		log.Panicln(err)
-	}
-	fmt.Println(ds)
-
-	d, err := c.Diagram(ctx, ds[0].DiagramID)
-	if err != nil {
-		log.Panicln(err)
-	}
-	fmt.Println(d)
-
-	co, err := c.DiagramContent(ctx, d.DiagramID)
-	if err != nil {
-		log.Panicln(err)
-	}
-	fmt.Println(co)
+	//l, err := c.License(ctx)
+	//if err != nil {
+	//	log.Panicln(err)
+	//}
+	//fmt.Println(l)
+	//
+	//o, err := c.Organizations(ctx)
+	//if err != nil {
+	//	log.Panicln(err)
+	//}
+	//fmt.Println(o)
+	//
+	//ds, err := c.Diagrams(ctx, cacoo.WithFilter(cacoo.FilterOwnedDiagrams), cacoo.WithLimit(3))
+	//if err != nil {
+	//	log.Panicln(err)
+	//}
+	//fmt.Println(ds)
+	//
+	//d, err := c.Diagram(ctx, ds[0].DiagramID)
+	//if err != nil {
+	//	log.Panicln(err)
+	//}
+	//fmt.Println(d)
+	//
+	//co, err := c.DiagramContent(ctx, d.DiagramID)
+	//if err != nil {
+	//	log.Panicln(err)
+	//}
+	//fmt.Println(co)
 }
