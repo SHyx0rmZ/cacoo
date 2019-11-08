@@ -49,4 +49,51 @@ func (c *Client) Diagram(ctx context.Context, diagramID string) (Diagram, error)
 	return r, nil
 }
 
+type DiagramContent struct {
+	Sheet struct {
+		Name     string     `xml:"name,attr"`
+		Groups   []CGroup   `xml:"group"`
+		Polygons []CPolygon `xml:"polygon"`
+		Lines    []CLine    `xml:"line"`
+		Texts    []CText    `xml:"text"`
+		Images   []CImage   `xml:"image"`
+	} `xml:"sheet"`
+}
+
+type CGroup struct {
+	StencilID string     `xml:"attr-stencil-id,attr"`
+	Groups    []CGroup   `xml:"group"`
+	Polygons  []CPolygon `xml:"polygon"`
+	Lines     []CLine    `xml:"line"`
+	Texts     []CText    `xml:"text"`
+	Images    []CImage   `xml:"image"`
+}
+
+type CPolygon struct {
+}
+
+type CLine struct {
+}
+
+type CText struct {
+	Text string `xml:",innerxml"`
+}
+
+type CImage struct {
+	SourceID string `xml:"source-id,attr"`
+}
+
+func NewDiagramContentRequest(ctx context.Context, diagramID string) (*http.Request, error) {
+	return http.NewRequestWithContext(ctx, http.MethodGet, "https://cacoo.com/api/v1/diagrams/"+diagramID+"/contents.xml", nil)
+}
+
+func (c *Client) DiagramContent(ctx context.Context, diagramID string) (DiagramContent, error) {
+	var r DiagramContent
+	err := c.do(NewDiagramContentRequest(ctx, diagramID))(&r)
+	if err != nil {
+		return DiagramContent{}, err
+	}
+	return r, nil
+}
+
 //func NewChatMessagesRequest(ctx context.Context,diagramID string)

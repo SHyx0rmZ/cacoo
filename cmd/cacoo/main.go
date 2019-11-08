@@ -50,4 +50,10 @@ func main() {
 		log.Panicln(err)
 	}
 	fmt.Println(d)
+
+	co, err := c.DiagramContent(ctx, d.DiagramID)
+	if err != nil {
+		log.Panicln(err)
+	}
+	fmt.Println(co)
 }
