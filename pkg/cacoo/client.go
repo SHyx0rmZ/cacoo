@@ -2,6 +2,7 @@ package cacoo
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -22,9 +23,11 @@ func NewClient(apiKey string) *Client {
 
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	req2 := req.Clone(req.Context())
-	q := req2.URL.Query()
-	q.Add("apiKey", c.apiKey)
-	req2.URL.RawQuery = q.Encode()
+	if c.apiKey != "" {
+		q := req2.URL.Query()
+		q.Add("apiKey", c.apiKey)
+		req2.URL.RawQuery = q.Encode()
+	}
 	return c.client.Do(req2)
 }
 
@@ -46,6 +49,9 @@ func (c *Client) do(req *http.Request, err error) func(interface{}) error {
 
 			}
 		}()
+		if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+			return fmt.Errorf("request to Cacoo API was not successful: %s", resp.Status)
+		}
 		err = xml.NewDecoder(io.TeeReader(resp.Body, os.Stderr)).Decode(v)
 		if err != nil {
 			return err

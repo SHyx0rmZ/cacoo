@@ -1,0 +1,13 @@
+digraph "pprof.head_alloc.flat.alloc_space.dot" {
+node [style=filled];
+"5RHzasWUM0m-4tJYV9jcQMA" [label="line3000\n0 of 98.63MB (100%)\n",fillcolor="#edd5d5",bordercolor="#c54646",shape="rectangle"];
+"8WWS3Do5FuK-gL20JfebdeO" [label="line3001\n0 of 36.13MB (36.63%)​",fillcolor="#eddbd5",bordercolor="#b21600",shape="rectangle"];
+"6Hrzq1MWLmu-cDZT6oxsNqm" [label="​​line3​002\n31.25MB (31.68%)\nof 94.73MB (96.04%)\n",fillcolor="#edd5d5",bordercolor="#c54646",shape="rectangle"];
+"5ZxPKjA7ewy-honxnl10zYa" [label="line2000\n0 of 63.48MB (64.36%)\n",fillcolor="#edd5d5",bordercolor="#c54646",shape="rectangle"];
+"82EV2ChxjUK-6J7mRHnVzqs" [label="​​line2001\n62.50MB (63.37%)\nof 63.48MB (64.36%)\n",fillcolor="#edd5d5",bordercolor="#c54646",shape="rectangle"];
+"5RHzasWUM0m-4tJYV9jcQMA" -> "6Hrzq1MWLmu-cDZT6oxsNqm" [label="\n(inline)\n"];
+"5RHzasWUM0m-4tJYV9jcQMA" -> "8WWS3Do5FuK-gL20JfebdeO" [label="36.13MB\n(inline)\n"];
+"8WWS3Do5FuK-gL20JfebdeO" -> "6Hrzq1MWLmu-cDZT6oxsNqm" [label="32.23MB\n(inline)\n"];
+"6Hrzq1MWLmu-cDZT6oxsNqm" -> "5ZxPKjA7ewy-honxnl10zYa" [label="63.48MB"];
+"5ZxPKjA7ewy-honxnl10zYa" -> "82EV2ChxjUK-6J7mRHnVzqs" [label="63.48MB\n(inline)\n"];
+}
