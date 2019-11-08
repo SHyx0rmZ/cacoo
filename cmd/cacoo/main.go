@@ -39,7 +39,7 @@ func main() {
 	}
 	fmt.Println(o)
 
-	ds, err := c.Diagrams(ctx)
+	ds, err := c.Diagrams(ctx, cacoo.WithFilter(cacoo.FilterOwnedDiagrams), cacoo.WithLimit(3))
 	if err != nil {
 		log.Panicln(err)
 	}
