@@ -12,8 +12,9 @@ import (
 )
 
 var commands = map[string]func(context.Context, *cacoo.Client){
-	"account": Account,
-	"user":    User,
+	"account":  Account,
+	"diagrams": Diagrams,
+	"user":     User,
 }
 
 func Account(ctx context.Context, client *cacoo.Client) {
@@ -27,8 +28,46 @@ func Account(ctx context.Context, client *cacoo.Client) {
 	fmt.Println("ImageURL:", a.ImageURL)
 }
 
-func License(ctx context.Context, client *cacoo.Client) {
+func Diagrams(ctx context.Context, client *cacoo.Client) {
+	fs := flag.NewFlagSet("diagrams", flag.ContinueOnError)
+	fs.Usage = usageWithNewline
 
+	var opts struct {
+		Filter string
+		Limit  int
+	}
+
+	fs.StringVar(&opts.Filter, "--filter", "owned", `one of "all", "owned", "shared", "stencil", "template", "recyclebin"`)
+	fs.IntVar(&opts.Limit, "--limit", 3, "maximum number of diagrams to return")
+
+	err := fs.Parse(flag.Args()[1:])
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var ps []cacoo.DiagramsRequestParameter
+	if opts.Filter != "" {
+		ps = append(ps, cacoo.WithFilter(cacoo.DiagramFilter(opts.Filter)))
+	}
+	if opts.Limit != 0 {
+		ps = append(ps, cacoo.WithLimit(opts.Limit))
+	}
+
+	ds, err := client.Diagrams(ctx, ps...)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for i, d := range ds {
+		fmt.Printf("Diagram #%d", i)
+		fmt.Println()
+		fmt.Println("  Title:", d.Title)
+		fmt.Println("    URL:", d.URL)
+
+		if i != len(ds)-1 {
+			fmt.Println()
+		}
+	}
 }
 
 func User(ctx context.Context, client *cacoo.Client) {
@@ -49,6 +88,7 @@ func User(ctx context.Context, client *cacoo.Client) {
 func available() {
 	fmt.Fprintln(os.Stderr, "Available commands are:")
 	fmt.Fprintln(os.Stderr, "   ", "account          - list information on account associated with the API key")
+	fmt.Fprintln(os.Stderr, "   ", "diagrams         - list diagrams")
 	fmt.Fprintln(os.Stderr, "   ", "user <user-name> - list information on specified user")
 	os.Exit(2)
 }
