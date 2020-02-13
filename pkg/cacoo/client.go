@@ -58,6 +58,9 @@ func (c *Client) do(req *http.Request, err error) func(interface{}) error {
 		if c.debug {
 			r = io.TeeReader(r, os.Stdout)
 		}
+		if v == nil {
+			return nil
+		}
 		err = xml.NewDecoder(r).Decode(v)
 		if err != nil {
 			return err

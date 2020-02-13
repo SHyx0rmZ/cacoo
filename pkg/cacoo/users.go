@@ -22,8 +22,8 @@ func (c *Client) User(ctx context.Context, name string) (User, error) {
 type UsersResponse User
 
 type User struct {
-	Name     string `xml:"name"`
-	Nickname string `xml:"nickname"`
-	Type     string `xml:"type"`
-	ImageURL string `xml:"imageUrl"`
+	Name     string `xml:"name" json:"name"`
+	Nickname string `xml:"nickname" json:"nickname"`
+	Type     string `xml:"type" json:"type"`
+	ImageURL string `xml:"imageUrl" json:"imageUrl"`
 }
